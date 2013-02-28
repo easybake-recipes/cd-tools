@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Promote from <%= @promote_from %> to <%= @name %></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector"/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash -x
+        /var/lib/jenkins/tools/promote.rb &apos;<%= @chef_server_url %>&apos; &apos;<%= @node_name %>&apos; &apos;<%= @client_key %>&apos; &apos;<%= @promote_from %>&apos; &apos;<%= @chef_server_url %>&apos; &apos;<%= @node_name %>&apos; &apos;<%= @client_key %>&apos; &apos;<%= @name %>&apos;</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Upload chef changes to a given environment</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>GO</name>
+          <description></description>
+          <defaultValue>FAST</defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector"/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>/var/lib/jenkins/tools/gerrit-git-prep.rb <%= @job['gerrit_host_name'] %></command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash -x
+export CHEF_SERVER_URL=<%= @job['chef_server_url'] %>
+export NODE_NAME=<%= @job['node_name'] %>
+export CLIENT_KEY=<%= @job['client_key'] %>
+cd ./chef-repo || true
+/opt/chef/bin/knife diff -c /var/lib/jenkins/tools/ci-knife.rb --name-status | /opt/chef/embedded/bin/ruby /var/lib/jenkins/tools/bump_patch_level.rb
+</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash -x
+export CHEF_SERVER_URL=<%= @job['chef_server_url'] %>
+export NODE_NAME=<%= @job['node_name'] %>
+export CLIENT_KEY=<%= @job['client_key'] %>
+cd ./chef-repo || true
+/var/lib/jenkins/tools/pin_environment.rb dev-<%= @job['id'] %>
+</command>id
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash -x
+export CHEF_SERVER_URL=<%= @job['chef_server_url'] %> 
+export NODE_NAME=<%= @job['node_name'] %>
+export CLIENT_KEY=<%= @job['client_key'] %>
+cd ./chef-repo || true
+/var/lib/jenkins/tools/set_environment_attrs.rb dev-<%= @job['id'] %>
+</command>
+    </hudson.tasks.Shell>
+<%- if @pipeline_type == "app" -%>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash -x
+export CHEF_SERVER_URL=<%= @job['chef_server_url'] %>
+export NODE_NAME=<%= @job['node_name'] %>
+export CLIENT_KEY=<%= @job['client_key'] %>
+cd ./chef-repo || true
+/var/lib/jenkins/tools/set_application_versions.rb dev-<%= @job['id'] %> <%= @job['id'] %>
+</command>
+    </hudson.tasks.Shell>
+<%- end -%>
+    <hudson.tasks.Shell>
+      <command>
+export CHEF_SERVER_URL=<%= @job['chef_server_url'] %>
+export NODE_NAME=<%= @job['node_name'] %>
+export CLIENT_KEY=<%= @job['client_key'] %>
+cd ./chef-repo || true
+if [ -f ./metadata.rb ]; then
+  name=`cat metadata.rb | grep '^name' | perl -p -i -e "s:^name\s+[\"'](.+)[\"']:\\$1:g"`
+  if [ -z "$name" ]; then
+    echo "*** You must set the name in the metadata to use a bare cookbook repository! ***"
+    exit 15
+  fi
+  mkdir $name
+  cp -r * $name || true
+  knife cookbook upload $name -c /var/lib/jenkins/tools/ci-knife.rb
+  rm -rf $name
+else
+  /opt/chef/bin/knife upload . -c /var/lib/jenkins/tools/ci-knife.rb -VV
+fi</command>
+    </hudson.tasks.Shell>
+  </builders>
+<%- if @pipeline_type == "app" -%>
+  <publishers>
+    <hudson.plugins.parameterizedtrigger.BuildTrigger>
+      <configs>
+        <hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
+          <configs>
+            <hudson.plugins.parameterizedtrigger.CurrentBuildParameters/>
+          </configs>
+          <projects><%= @job['id'] %>-dev-deploy</projects>
+          <condition>UNSTABLE_OR_BETTER</condition>
+          <triggerWithNoParameters>false</triggerWithNoParameters>
+        </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
+      </configs>
+    </hudson.plugins.parameterizedtrigger.BuildTrigger>
+  </publishers>
+<%- else -%>
+  <publishers>
+    <hudson.plugins.parameterizedtrigger.BuildTrigger>
+      <configs>
+        <hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
+          <configs>
+            <hudson.plugins.parameterizedtrigger.CurrentBuildParameters/>
+          </configs>
+          <projects><%= @job['id'] %>-promote-integration</projects>
+          <condition>UNSTABLE_OR_BETTER</condition>
+          <triggerWithNoParameters>false</triggerWithNoParameters>
+        </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
+      </configs>
+    </hudson.plugins.parameterizedtrigger.BuildTrigger>
+  </publishers>
+<%- end -%>
+  <buildWrappers/>
+</project>
+
