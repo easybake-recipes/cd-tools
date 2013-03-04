@@ -9,7 +9,12 @@
 
 include_recipe "jenkins"
 
-%w{dejavu-fonts-common dejavu-lgc-sans-mono-fonts dejavu-sans-fonts dejavu-sans-mono-fonts dejavu-serif-fonts}.each do |font_pkg|
+case node.platform_family
+when /debian/
+  %w{ttf-dejavu ttf-dejavu-core ttf-dejavu-extra}
+else
+  %w{dejavu-fonts-common dejavu-lgc-sans-mono-fonts dejavu-sans-fonts dejavu-sans-mono-fonts dejavu-serif-fonts}
+end.each do |font_pkg|
   package font_pkg
 end
 
@@ -147,8 +152,8 @@ end
 
 ger_host = node['cd-tools']['gerrit']['hostname']
 ger_admin = node['cd-tools']['gerrit']['admin_user']
-ger_admin_pass = Chef::EncryptedDataBagItem.load("cd_credentials", ger_admin)['password']
-base64_creds = Base64.encode64("#{ger_admin}:#{ger_admin_pass}")
+# ger_admin_pass = Chef::EncryptedDataBagItem.load("cd_credentials", ger_admin)['password']
+# base64_creds = Base64.encode64("#{ger_admin}:#{ger_admin_pass}")
 
 if node['cd-tools']['stash']
   stash_host = node['cd-tools']['stash']['hostname']
@@ -162,17 +167,18 @@ search(:chef_pipelines, "*:*") do |pipeline|
     creates "#{node['gerrit']['site_path']}/git/#{pipeline['id']}.git"
   end
 
-  if node['cd-tools']['stash']
-    http_request "create #{pipeline['id']} stash repo" do
-      action :post
-      url create_url
-      message name: pipeline['id']
-      # Not idempotent yet
-      # not_if "curl -k #{create_url}"
-      ignore_failure true
-      headers({"AUTHORIZATION" => "Basic #{base64_creds}"})
-    end
-  end
+  # Disabling stash for now
+  # if node['cd-tools']['stash']
+  #   http_request "create #{pipeline['id']} stash repo" do
+  #     action :post
+  #     url create_url
+  #     message name: pipeline['id']
+  #     # Not idempotent yet
+  #     # not_if "curl -k #{create_url}"
+  #     ignore_failure true
+  #     headers({"AUTHORIZATION" => "Basic #{base64_creds}"})
+  #   end
+  # end
 
 
   jct = resources("template[/var/lib/jenkins/config.xml]")
