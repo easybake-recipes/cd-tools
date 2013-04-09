@@ -46,6 +46,17 @@ STDIN.each_line do |diff_line|
   updated = true
 end
 
+# FIXME: this logic for a cookbook repo is a bit flakey
+metadata_file = 'metadata.rb'
+if File.exists? (metadata_file)
+  bump_patch_level(metadata_file)
+  if !system("git add #{metadata_file}") 
+    raise "Failed to git add #{metdata_file}: #{$?}"
+  end
+  seen_cookbooks << '_thisrepo_' # can we pull the name from the metadata?
+  updated = true
+end
+
 if updated
   if !system("git commit -m 'Updated patch level for #{seen_cookbooks.join(', ')}'")
     raise "Failed to git commit"

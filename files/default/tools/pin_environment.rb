@@ -9,6 +9,7 @@ require 'chef'
 Chef::Config.from_file("/var/lib/jenkins/tools/ci-knife.rb")
 
 def pin_env(env, cookbook_versions)
+  Chef::Log.info("pinning env: #{env}")
   to = Chef::Environment.load_or_create(env)
   cookbook_versions.each do |cb, version|
     puts "Pinning #{cb} #{version} in #{env}"

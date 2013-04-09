@@ -209,6 +209,7 @@ search(:app_pipelines, "*:*") do |pipeline|
   execute "ssh -p 29418 -o 'StrictHostKeyChecking no' #{ger_admin}@#{ger_host} gerrit create-project --require-change-id --name #{pipeline['id']}" do
     user node['gerrit']['username']
     creates "#{node['gerrit']['site_path']}/git/#{pipeline['id']}.git"
+    ignore_failure true # first time true, gerrit isn't yet up
   end
 
   if node['cd-tools']['stash']
