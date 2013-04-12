@@ -29,9 +29,9 @@ export CHEF_SERVER_URL=<%= @job['chef_server_url'] %>
 export NODE_NAME=<%= @job['node_name'] %>
 export CLIENT_KEY=<%= @job['client_key'] %>
 <%- if @job['winrm'] -%>
-      /opt/chef/bin/knife winrm 'chef_environment:<%= @promote_to %> AND role:<%= @job['deployment_role'] %> AND NOT apps_<%= @job['id'] %>_status:inactive' 'chef-client -Fmin -l fatal' -x <%= @job['winrm']['username'] %> -P <%= @job['winrm']['password'] %> -c /var/lib/jenkins/tools/ci-knife.rb -a azurefqdn
+      /opt/chef/bin/knife winrm 'chef_environment:<%= @promote_to %> AND role:<%= @job['deployment_role'] %> AND NOT apps_<%= @job['id'] %>_status:inactive' 'chef-client -Fdoc -l debug' -x <%= @job['winrm']['username'] %> -P <%= @job['winrm']['password'] %> -c /var/lib/jenkins/tools/ci-knife.rb -a azurefqdn
 <%- else -%>
-      /opt/chef/bin/knife ssh 'chef_environment:<%= @promote_to %> AND role:<%= @job['deployment_role'] %> AND NOT apps_<%= @job['id'] %>_status:inactive' 'chef-client -Fmin -l fatal' -x root -a ipaddress -c /var/lib/jenkins/tools/ci-knife.rb --no-host-key-verify
+      /opt/chef/bin/knife ssh 'chef_environment:<%= @promote_to %> AND role:<%= @job['deployment_role'] %> AND NOT apps_<%= @job['id'] %>_status:inactive' 'chef-client -Fdoc -l debug' -x root -a ipaddress -c /var/lib/jenkins/tools/ci-knife.rb --no-host-key-verify
 <%- end -%>
   </command>
 
