@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Promote from dev-<%= @job['id'] %> to integration</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>GO</name>
+          <description></description>
+          <defaultValue>FAST</defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+    <hudson.plugins.throttleconcurrents.ThrottleJobProperty>
+      <maxConcurrentPerNode>0</maxConcurrentPerNode>
+      <maxConcurrentTotal>0</maxConcurrentTotal>
+      <categories>
+        <string>promote-to-integration</string>
+      </categories>
+      <throttleEnabled>true</throttleEnabled>
+      <throttleOption>category</throttleOption>
+    </hudson.plugins.throttleconcurrents.ThrottleJobProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector"/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+<command>#!/bin/bash -x
+export CHEF_SERVER_URL=<%= @job['chef_server_url'] %>
+export NODE_NAME=<%= @job['node_name'] %>
+export CLIENT_KEY=<%= @job['client_key'] %>
+<%- if @pipeline_type == "app" -%>
+eval "export `/var/lib/jenkins/tools/get_app_build.rb dev-<%= @job['id'] %> <%= @job['id'] %>`"
+<%- end -%>
+/var/lib/jenkins/tools/gerrit-git-prep.rb <%= @job['gerrit_host_name'] %></command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash -x
+export CHEF_SERVER_URL=<%= @job['chef_server_url'] %>
+export NODE_NAME=<%= @job['node_name'] %>
+export CLIENT_KEY=<%= @job['client_key'] %>
+cd ./chef-repo || true
+<%- if @pipeline_type == "app" -%>
+/var/lib/jenkins/tools/set_environment_attrs.rb dev-<%= @job['id'] %> integration <%= @job['id'] %></command>
+<%- else -%>
+/var/lib/jenkins/tools/set_environment_attrs.rb dev-<%= @job['id'] %> integration</command>
+<%- end -%>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash -x
+export CHEF_SERVER_URL=<%= @job['chef_server_url'] %>
+export NODE_NAME=<%= @job['node_name'] %>
+export CLIENT_KEY=<%= @job['client_key'] %>
+cd ./chef-repo || true
+/var/lib/jenkins/tools/pin_environment.rb dev-<%= @job['id'] %> integration</command>
+    </hudson.tasks.Shell>
+  </builders>
+    <publishers>
+    <hudson.tasks.BuildTrigger>
+      <childProjects>integration-deploy</childProjects>
+      <threshold>
+        <name>UNSTABLE</name>
+        <ordinal>1</ordinal>
+        <color>YELLOW</color>
+      </threshold>
+    </hudson.tasks.BuildTrigger>
+  </publishers>
+  <buildWrappers/>
+</project>

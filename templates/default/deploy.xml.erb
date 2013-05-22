@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<com.cloudbees.plugins.flow.BuildFlow>
+  <actions/>
+  <description>The <%= @name %> Deployment Flow</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.BooleanParameterDefinition>
+          <name>what</name>
+          <description>is the what</description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+    <hudson.plugins.throttleconcurrents.ThrottleJobProperty>
+      <maxConcurrentPerNode>0</maxConcurrentPerNode>
+      <maxConcurrentTotal>0</maxConcurrentTotal>
+      <throttleEnabled>false</throttleEnabled>
+      <throttleOption>project</throttleOption>
+    </hudson.plugins.throttleconcurrents.ThrottleJobProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector"/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders/>
+  <publishers/>
+  <buildWrappers/>
+  <icon/>
+<%- if @deploy_env == "dev" %>
+  <dsl>
+<%- @legs.each do |job| -%>
+  <%- if @job =~ /functional-tests$/ -%>
+    build(&quot;<%= job %>&quot;, GERRIT_PROJECT: params[&apos;GERRIT_PROJECT&apos;], GERRIT_BRANCH: params[&apos;GERRIT_BRANCH&apos;], GERRIT_REFSPEC: params[&apos;GERRIT_REFSPEC&apos;])
+  <%- else -%>
+    build(&quot;<%= job %>&quot;)
+  <%- end -%>
+<%- end -%>
+  </dsl>
+<%- else -%>
+      <dsl>
+<%- if @name != "integration" -%>
+build(&quot;<%= @name %>-promote&quot;)
+<%- end -%>
+<%- if @apps.length == 1 -%>
+  <%- @apps.each do |name, legs| -%>
+    <%- legs.each do |job| -%>
+      <%- if job =~ /functional-tests$/ -%>
+        build(&quot;<%= job %>&quot;, GERRIT_PROJECT: params[&apos;GERRIT_PROJECT&apos;], GERRIT_BRANCH: params[&apos;GERRIT_BRANCH&apos;], GERRIT_REFSPEC: params[&apos;GERRIT_REFSPEC&apos;])
+      <%- else -%>
+        build(&quot;<%= job %>&quot;)
+      <%- end -%>
+    <%- end %>
+  <%- end -%>
+<%- else -%>
+parallel(
+<%- @apps.each do |name, legs| -%>
+  {
+    <%- legs.each do |job| -%>
+      <%- if job =~ /functional-tests$/ -%>
+        build(&quot;<%= job %>&quot;, GERRIT_PROJECT: params[&apos;GERRIT_PROJECT&apos;], GERRIT_BRANCH: params[&apos;GERRIT_BRANCH&apos;], GERRIT_REFSPEC: params[&apos;GERRIT_REFSPEC&apos;])
+      <%- else -%>
+        build(&quot;<%= job %>&quot;)
+      <%- end -%>
+    <%- end %>
+  },
+<%- end -%>
+)
+<%- end -%>
+</dsl>
+<%- end -%>
+</com.cloudbees.plugins.flow.BuildFlow>

@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Check unit tests for <%= @job['id'] %></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.plugins.throttleconcurrents.ThrottleJobProperty>
+      <maxConcurrentPerNode>0</maxConcurrentPerNode>
+      <maxConcurrentTotal>0</maxConcurrentTotal>
+      <throttleEnabled>false</throttleEnabled>
+      <throttleOption>project</throttleOption>
+    </hudson.plugins.throttleconcurrents.ThrottleJobProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <%- if @job.has_key?('assigned_node') -%>
+    <assignedNode><%= @job['assigned_node'] %></assignedNode>
+    <canRoam>false</canRoam>
+  <%- else -%>
+    <canRoam>true</canRoam>
+  <%- end -%>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector">
+    <com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.GerritTrigger>
+      <spec></spec>
+      <gerritProjects>
+        <com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.data.GerritProject>
+          <compareType>PLAIN</compareType>
+          <pattern><%= @job['gerrit_project'] %></pattern>
+          <branches>
+            <com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.data.Branch>
+              <compareType>ANT</compareType>
+              <pattern>**</pattern>
+            </com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.data.Branch>
+          </branches>
+        </com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.data.GerritProject>
+      </gerritProjects>
+      <silentMode>false</silentMode>
+      <escapeQuotes>true</escapeQuotes>
+      <triggerOnPatchsetUploadedEvent>true</triggerOnPatchsetUploadedEvent>
+      <triggerOnChangeMergedEvent>false</triggerOnChangeMergedEvent>
+      <triggerOnCommentAddedEvent>false</triggerOnCommentAddedEvent>
+      <triggerOnRefUpdatedEvent>false</triggerOnRefUpdatedEvent>
+      <commentAddedTriggerApprovalCategory></commentAddedTriggerApprovalCategory>
+      <commentAddedTriggerApprovalValue></commentAddedTriggerApprovalValue>
+      <buildStartMessage></buildStartMessage>
+      <buildFailureMessage></buildFailureMessage>
+      <buildSuccessfulMessage></buildSuccessfulMessage>
+      <buildUnstableMessage></buildUnstableMessage>
+      <customUrl></customUrl>
+    </com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.GerritTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <%- if @job['build_node'] == "windows" -%>
+        <command>c:/opscode/chef/embedded/bin/ruby c:/jenkins/tools/gerrit-git-prep.rb <%= @job['gerrit_host_name'] %></command>
+      <%- else -%>
+        <command>/var/lib/jenkins/tools/gerrit-git-prep.rb <%= @job['gerrit_host_name'] %></command>
+      <%- end -%>
+    </hudson.tasks.Shell>
+    <%- @job['freestyle']['unit-tests']['tasks'].each do |task| -%>
+    <hudson.tasks.<%= task["type"] %>>
+      <command><%= ErbString.do(task["command"], self) %></command>
+    </hudson.tasks.<%= task["type"] %>>
+    <%- end -%>
+  </builders>
+  <publishers>
+    <%- if @job['freestyle']['unit-tests'].has_key?("junit_result") -%>
+    <hudson.tasks.junit.JUnitResultArchiver>
+      <testResults><%= @job['freestyle']['unit-tests']['junit_result'] %></testResults>
+      <keepLongStdio>false</keepLongStdio>
+      <testDataPublishers/>
+    </hudson.tasks.junit.JUnitResultArchiver>
+    <%- end -%>
+    <%- if @job['freestyle']['unit-tests'].has_key?("emma") -%>
+    <hudson.plugins.emma.EmmaPublisher plugin="emma@1.29">
+      <includes><%= @job['freestyle']['unit-tests']['emma']['result'] %></includes>
+      <healthReports>
+        <minClass><%= @job['freestyle']['unit-tests']['emma']['minClass'] %></minClass>
+        <maxClass><%= @job['freestyle']['unit-tests']['emma']['maxClass'] %></maxClass>
+        <minMethod><%= @job['freestyle']['unit-tests']['emma']['minMethod'] %></minMethod>
+        <maxMethod><%= @job['freestyle']['unit-tests']['emma']['maxMethod'] %></maxMethod>
+        <minBlock><%= @job['freestyle']['unit-tests']['emma']['minBlock'] %></minBlock>
+        <maxBlock><%= @job['freestyle']['unit-tests']['emma']['maxBlock'] %></maxBlock>
+        <minLine><%= @job['freestyle']['unit-tests']['emma']['minLine'] %></minLine>
+        <maxLine><%= @job['freestyle']['unit-tests']['emma']['maxLine'] %></maxLine>
+        <minCondition><%= @job['freestyle']['unit-tests']['emma']['minCondition'] %></minCondition>
+        <maxCondition><%= @job['freestyle']['unit-tests']['emma']['maxCondition'] %></maxCondition>
+      </healthReports>
+    </hudson.plugins.emma.EmmaPublisher>
+    <%- end -%>
+  </publishers>
+  <buildWrappers/>
+</project>
