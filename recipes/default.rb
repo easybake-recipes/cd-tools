@@ -245,7 +245,7 @@ search(:app_pipelines, "*:*") do |pipeline|
     http_request "create #{pipeline['id']} stash repo" do
       action :post
       url create_url
-      message name: pipeline['id']
+      message :name => pipeline['id']
       # Not idempotent yet
       # not_if "curl -k #{create_url}"
       ignore_failure true
