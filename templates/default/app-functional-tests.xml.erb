@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Functional tests for <%= @job['id'] %></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.plugins.throttleconcurrents.ThrottleJobProperty>
+      <maxConcurrentPerNode>0</maxConcurrentPerNode>
+      <maxConcurrentTotal>0</maxConcurrentTotal>
+      <throttleEnabled>false</throttleEnabled>
+      <throttleOption>project</throttleOption>
+    </hudson.plugins.throttleconcurrents.ThrottleJobProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector"/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash -x
+export CHEF_SERVER_URL=<%= @job['chef_server_url'] %>
+export NODE_NAME=<%= @job['node_name'] %>
+export CLIENT_KEY=<%= @job['client_key'] %>
+eval "export `/var/lib/jenkins/tools/get_app_build.rb <%= @promote_to %> <%= @job['id'] %>`"
+/var/lib/jenkins/tools/gerrit-git-prep.rb <%= @job['gerrit_host_name'] %></command>
+    </hudson.tasks.Shell>
+    <%- @job['freestyle']['functional-tests']['tasks'].each do |task| -%>
+    <hudson.tasks.Shell>
+      <command><%= ErbString.do(task, self) %></command>
+    </hudson.tasks.Shell>
+    <%- end -%>
+  </builders>
+  <publishers>
+    <%- if @job['freestyle']['functional-tests'].has_key?("junit_result") -%>
+    <hudson.tasks.junit.JUnitResultArchiver>
+      <testResults><%= @job['freestyle']['functional-tests']['junit_result'] %></testResults>
+      <keepLongStdio>false</keepLongStdio>
+      <testDataPublishers/>
+    </hudson.tasks.junit.JUnitResultArchiver>
+    <%- end -%>
+  </publishers>
+  <buildWrappers/>
+</project>
