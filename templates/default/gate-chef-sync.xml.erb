@@ -68,6 +68,7 @@ cd ./chef-repo || true
 export CHEF_SERVER_URL=<%= @job['chef_server_url'] %>
 export NODE_NAME=<%= @job['node_name'] %>
 export CLIENT_KEY=<%= @job['client_key'] %>
+export LANG=en_US.UTF-8
 cd ./chef-repo || true
 if [ -f ./metadata.rb ]; then
   name=`cat metadata.rb | grep '^name' | perl -p -i -e "s:^name\s+[\"'](.+)[\"']:\\$1:g"`
