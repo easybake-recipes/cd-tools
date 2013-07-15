@@ -1,5 +1,5 @@
 [gerrit]
 host=code.internal.machines
 port=29418
-project=cookbook-kerberos
+project=cookbook-cd-tools
 defaultbranch=master
