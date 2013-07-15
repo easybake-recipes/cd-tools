@@ -45,7 +45,7 @@
       <command>/var/lib/jenkins/tools/gerrit-git-prep.rb <%= @job['gerrit_host_name'] %></command>
     </hudson.tasks.Shell>
     <hudson.tasks.Shell>
-      <command>/var/lib/jenkins/tools/foodcritic-check.sh '<%= @job['food_critic_options'] %>'</command>
+      <command>LANG=en_US.UTF-8 /var/lib/jenkins/tools/foodcritic-check.sh '<%= @job['food_critic_options'] %>'</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
