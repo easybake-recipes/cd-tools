@@ -8,3 +8,4 @@ default["cd-tools"]["jenkins"]["git_email"] = "jenkins@#{node['fqdn']}"
 default["cd-tools"]["jenkins"]["git_name"] = "Jenkins"
 default["cd-tools"]["jenkins"]["pipeline"] = [ ] 
 default["cd-tools"]["jenkins"]["manual_steps"] = [ "production" ] 
+default["cd-tools"]["pipeline-name"] = 'pipeline-deliverance'

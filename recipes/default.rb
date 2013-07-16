@@ -354,3 +354,8 @@ search(:app_pipelines, "*:*") do |pipeline|
   end
 end
 
+# This is the logic to set the pipeline name
+pn=node["cd-tools"]["pipeline-name"]
+if node['apps'] && node['apps'][pn]
+  node.set['apps'][pn]['current'] = node['apps'][pn]['desired']
+end
