@@ -71,7 +71,7 @@
        <command>#!/bin/bash -x
          mkdir -p $WORKSPACE/pkg
          cd $WORKSPACE/pkg
-         /opt/ruby/bin/fpm -t <%= pt %> -s dir --prefix <%= @job['freestyle']['release']['prefix'] %> -n <%= @job['id'] %> -v `echo -n $BUILD_ID | tr - _` --iteration 1 --epoch 1 -m <%= @job['freestyle']['release']['maintainer'] %> -x pkg -C $WORKSPACE <%= @job['freestyle']['release']['package_pattern'] %> 
+         /opt/chef/embedded/bin/fpm -t <%= pt %> -s dir --prefix <%= @job['freestyle']['release']['prefix'] %> -n <%= @job['id'] %> -v `echo -n $BUILD_ID | tr - _` --iteration 1 --epoch 1 -m <%= @job['freestyle']['release']['maintainer'] %> -x pkg -C $WORKSPACE <%= @job['freestyle']['release']['package_pattern'] %>
        </command>
      </hudson.tasks.Shell>
      <%- end -%>
@@ -79,7 +79,7 @@
      <hudson.tasks.Shell>
       <%- if @job['build_node'] == "windows" -%>
         <command>c:/opscode/chef/embedded/bin/ruby c:/jenkins/tools/gen_app_data.rb <%= @job['assets'].join(" ") %></command>
-      <%- else -%> 
+      <%- else -%>
        <command>/var/lib/jenkins/tools/gen_app_data.rb <%= @job["assets"].join(" ") %></command>
       <%- end -%>
      </hudson.tasks.Shell>

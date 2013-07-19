@@ -20,9 +20,9 @@ end
 
 include_recipe "cd-tools::tools"
 
-slaves = [] 
+slaves = []
 search(:node, "role:jenkins-windows-slave") do |n|
-  slave = n["jenkins"]["node"].to_hash 
+  slave = n["jenkins"]["node"].to_hash
   slave['name'] = n["fqdn"]
   slave['launcher'] ||= {}
   slave['launcher']['host'] = n['fqdn']
@@ -39,7 +39,7 @@ template "/var/lib/jenkins/config.xml" do
     "dev_views" => { },
     "pipeline_views" => { },
     "app_views" => { },
-    "slaves" => slaves 
+    "slaves" => slaves
   )
   notifies :restart, "service[jenkins]"
 end
@@ -148,7 +148,7 @@ node['cd-tools']['jenkins']['pipeline'].each_index do |i|
       :name => penv,
       :apps => {},
       :manual => node['cd-tools']['jenkins']['manual_steps'].include?(penv)
-    ) 
+    )
   end
 
   if penv != "integration"
@@ -174,7 +174,7 @@ node['cd-tools']['jenkins']['pipeline'].each_index do |i|
         :client_key => node['cd-tools']['jenkins']['client_key'],
         :name => penv,
         :manual => node['cd-tools']['jenkins']['manual_steps'].include?(penv)
-      ) 
+      )
     end
   end
 end
@@ -222,7 +222,7 @@ search(:chef_pipelines, "*:*") do |pipeline|
       mode "0755"
       recursive true
     end
-    
+
     template File.join(job_directory, "config.xml") do
       source "#{job_partial}.xml.erb"
       owner "jenkins"
@@ -266,7 +266,7 @@ search(:app_pipelines, "*:*") do |pipeline|
       mode "0755"
       recursive true
     end
-    
+
     template File.join(job_directory, "config.xml") do
       owner "jenkins"
       group "jenkins"
@@ -314,12 +314,12 @@ search(:app_pipelines, "*:*") do |pipeline|
         if deploy_env == "dev"
           job_name = "#{pipeline['id']}-#{deploy_env}-#{leg}-#{job_type}"
           promote_from = "#{deploy_env}-#{pipeline['id']}"
-          dpipe.variables[:legs] << job_name 
+          dpipe.variables[:legs] << job_name
         else
           job_name = "#{deploy_env}-#{pipeline['id']}-#{leg}-#{job_type}"
           promote_from = deploy_env
           dpipe.variables[:apps][pipeline['id']] ||= []
-          dpipe.variables[:apps][pipeline['id']] << job_name 
+          dpipe.variables[:apps][pipeline['id']] << job_name
         end
 
         job_directory = "/var/lib/jenkins/jobs/#{job_name}"
@@ -342,15 +342,15 @@ search(:app_pipelines, "*:*") do |pipeline|
           mode "0644"
           notifies :restart, "service[jenkins]"
           variables(
-            :job => pipeline, 
+            :job => pipeline,
             :promote_from => promote_from,
             :promote_to => "#{deploy_env}-#{pipeline['id']}-#{leg}",
-            :leg => leg, 
+            :leg => leg,
             :pipeline_type => "app"
-          ) 
+          )
         end
       end
-    end 
+    end
   end
 end
 

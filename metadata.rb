@@ -1,9 +1,9 @@
 name "cd-tools"
-maintainer       "YOUR_COMPANY_NAME"
-maintainer_email "YOUR_EMAIL"
+maintainer       "Klarna Chefs"
+maintainer_email "chefs@klarna.com"
 license          "All rights reserved"
 description      "Installs/Configures cd-tools"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          "0.2.69"
+version          "0.2.70"
 
 depends "jenkins"
