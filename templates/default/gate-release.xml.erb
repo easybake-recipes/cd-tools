@@ -44,6 +44,7 @@
     </hudson.tasks.<%= task["type"] %>>
     <%- end -%>
      <%- @job['freestyle']['release']['package_type'].each do |pt| -%>
+       <%- next if pt == "manual" -%>
        <%- if pt == "zip" -%>
          <%- if @job['freestyle']['release'].has_key?('package_pattern') -%>
            <%- if @job['build_node'] == "windows" -%>
