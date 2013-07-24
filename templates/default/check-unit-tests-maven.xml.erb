@@ -117,7 +117,7 @@
   <buildWrappers/>
   <prebuilders>
     <hudson.tasks.Shell>
-      <command>/var/lib/jenkins/tools/gerrit-git-prep.rb localhost</command>
+      <command>/var/lib/jenkins/tools/gerrit-git-prep.rb <%= @job['gerrit_host_name'] %></command>
     </hudson.tasks.Shell>
   </prebuilders>
   <postbuilders>

@@ -64,6 +64,11 @@
     </hudson.tasks.Shell>
   </prebuilders>
   <postbuilders>
+    <hudson.tasks.Maven>
+      <targets>deploy -Pdeploy.target.repos</targets>
+      <mavenName>(Default)</mavenName>
+      <usePrivateRepository>false</usePrivateRepository>
+    </hudson.tasks.Maven>
      <hudson.tasks.Shell>
        <command>/var/lib/jenkins/tools/gen_app_data.rb <%= @job["assets"].join(" ") %> &gt; sync.properties
 echo &quot;ASSET_BUILD_ID = $BUILD_ID&quot; &gt;&gt; sync.properties</command>
