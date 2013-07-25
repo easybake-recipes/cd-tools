@@ -28,9 +28,14 @@ ARGV.each do |dir_pattern|
       name = $1
       version = $2
     when /\.war$/
-      file_name =~ /^(.+)-(\d+\.\d+\.\d+-\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})\.war/
-      name = $1
-      version = $2
+      case file_name
+      when /^(.+)-(\d+\.\d+\.\d+-\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})\.war/
+        name = $1
+        version = $2
+      when /^(.+)-(\d+\.\d+\.\d+-SNAPSHOT).*\.war/
+        name = $1
+        version = $2
+      end
     when /\.zip$/
       # MobileSecure-2013_02_14_21_04_12.zip
       file_name =~ /^(.+)-(\d{4}_\d{2}_\d{2}_\d{2}_\d{2}_\d{2})\.zip/
