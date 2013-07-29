@@ -36,6 +36,10 @@ ARGV.each do |dir_pattern|
         name = $1
         version = $2
       end
+    when /\.tgz$/
+      file_name =~ /^(.+)-(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}).tgz$/
+      name = $1
+      version = $2
     when /\.zip$/
       # MobileSecure-2013_02_14_21_04_12.zip
       file_name =~ /^(.+)-(\d{4}_\d{2}_\d{2}_\d{2}_\d{2}_\d{2})\.zip/
