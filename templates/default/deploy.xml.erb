@@ -37,7 +37,7 @@
   <%- if @job =~ /functional-tests$/ -%>
     build(&quot;<%= job %>&quot;, GERRIT_PROJECT: params[&apos;GERRIT_PROJECT&apos;], GERRIT_BRANCH: params[&apos;GERRIT_BRANCH&apos;], GERRIT_REFSPEC: params[&apos;GERRIT_REFSPEC&apos;])
   <%- else -%>
-    build(&quot;<%= job %>&quot;, GERRIT_PROJECT: params[&apos;GERRIT_PROJECT&apos;], GERRIT_BRANCH: params[&apos;GERRIT_BRANCH&apos;], GERRIT_REFSPEC: params[&apos;GERRIT_REFSPEC&apos;]))
+    build(&quot;<%= job %>&quot;, GERRIT_PROJECT: params[&apos;GERRIT_PROJECT&apos;], GERRIT_BRANCH: params[&apos;GERRIT_BRANCH&apos;], GERRIT_REFSPEC: params[&apos;GERRIT_REFSPEC&apos;])
   <%- end -%>
 <%- end -%>
   </dsl>
@@ -52,7 +52,7 @@ build(&quot;<%= @name %>-promote&quot;)
       <%- if job =~ /functional-tests$/ -%>
         build(&quot;<%= job %>&quot;, GERRIT_PROJECT: params[&apos;GERRIT_PROJECT&apos;], GERRIT_BRANCH: params[&apos;GERRIT_BRANCH&apos;], GERRIT_REFSPEC: params[&apos;GERRIT_REFSPEC&apos;])
       <%- else -%>
-        build(&quot;<%= job %>&quot;, GERRIT_PROJECT: params[&apos;GERRIT_PROJECT&apos;], GERRIT_BRANCH: params[&apos;GERRIT_BRANCH&apos;], GERRIT_REFSPEC: params[&apos;GERRIT_REFSPEC&apos;]))
+        build(&quot;<%= job %>&quot;, GERRIT_PROJECT: params[&apos;GERRIT_PROJECT&apos;], GERRIT_BRANCH: params[&apos;GERRIT_BRANCH&apos;], GERRIT_REFSPEC: params[&apos;GERRIT_REFSPEC&apos;])
       <%- end -%>
     <%- end %>
   <%- end -%>
@@ -64,7 +64,7 @@ parallel(
       <%- if job =~ /functional-tests$/ -%>
         build(&quot;<%= job %>&quot;, GERRIT_PROJECT: params[&apos;GERRIT_PROJECT&apos;], GERRIT_BRANCH: params[&apos;GERRIT_BRANCH&apos;], GERRIT_REFSPEC: params[&apos;GERRIT_REFSPEC&apos;])
       <%- else -%>
-        build(&quot;<%= job %>&quot;, GERRIT_PROJECT: params[&apos;GERRIT_PROJECT&apos;], GERRIT_BRANCH: params[&apos;GERRIT_BRANCH&apos;], GERRIT_REFSPEC: params[&apos;GERRIT_REFSPEC&apos;]))
+        build(&quot;<%= job %>&quot;, GERRIT_PROJECT: params[&apos;GERRIT_PROJECT&apos;], GERRIT_BRANCH: params[&apos;GERRIT_BRANCH&apos;], GERRIT_REFSPEC: params[&apos;GERRIT_REFSPEC&apos;])
       <%- end -%>
     <%- end %>
   },
