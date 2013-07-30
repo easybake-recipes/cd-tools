@@ -4,6 +4,6 @@ maintainer_email "chefs@klarna.com"
 license          "All rights reserved"
 description      "Installs/Configures cd-tools"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          "0.2.77"
+version          "0.2.78"
 
 depends "jenkins"
