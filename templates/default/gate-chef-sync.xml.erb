@@ -43,7 +43,7 @@ cd ./chef-repo || true
 if [ ${GERRIT_BRANCH} == 'master' ]; then
   /var/lib/jenkins/tools/pin_environment.rb dev-<%= @job['id'] %>
 else
-  /var/lib/jenkins/tools/pin_environment.rb ${GERRIT_BRANCH}-dev-<%= @job['id'] %>
+  /var/lib/jenkins/tools/pin_environment.rb ${GERRIT_BRANCH}
 fi
 </command>id
     </hudson.tasks.Shell>
@@ -70,7 +70,7 @@ cd ./chef-repo || true
 if [ ${GERRIT_BRANCH} == 'master' ]; then
   /var/lib/jenkins/tools/set_application_versions.rb dev-<%= @job['id'] %> <%= @job['id'] %>
 else
-  /var/lib/jenkins/tools/set_application_versions.rb ${GERRIT_BRANCH}-dev-<%= @job['id'] %> <%= @job['id'] %>
+  /var/lib/jenkins/tools/set_application_versions.rb ${GERRIT_BRANCH} <%= @job['id'] %>
 fi
 </command>
     </hudson.tasks.Shell>

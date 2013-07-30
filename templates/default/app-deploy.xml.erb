@@ -24,7 +24,7 @@
       if [ $GERRIT_BRANCH == 'master' ]; then
         /var/lib/jenkins/tools/promote.rb &apos;<%= @job['chef_server_url'] %>&apos; &apos;<%= @job['node_name'] %>&apos; &apos;<%= @job['client_key'] %>&apos; &apos;<%= @promote_from %>&apos; &apos;<%= @job['chef_server_url'] %>&apos; &apos;<%= @job['node_name'] %>&apos; &apos;<%= @job['client_key'] %>&apos; &apos;<%= @promote_to %>&apos;
       else
-        /var/lib/jenkins/tools/promote.rb &apos;<%= @job['chef_server_url'] %>&apos; &apos;<%= @job['node_name'] %>&apos; &apos;<%= @job['client_key'] %>&apos; "${GERRIT_BRANCH}-<%= @promote_from %>" &apos;<%= @job['chef_server_url'] %>&apos; &apos;<%= @job['node_name'] %>&apos; &apos;<%= @job['client_key'] %>&apos; "${GERRIT_BRANCH}-<%= @promote_to %>"
+        /var/lib/jenkins/tools/promote.rb &apos;<%= @job['chef_server_url'] %>&apos; &apos;<%= @job['node_name'] %>&apos; &apos;<%= @job['client_key'] %>&apos; "${GERRIT_BRANCH}" &apos;<%= @job['chef_server_url'] %>&apos; &apos;<%= @job['node_name'] %>&apos; &apos;<%= @job['client_key'] %>&apos; "${GERRIT_BRANCH}-<%= @leg %>"
       fi
       </command>
     </hudson.tasks.Shell>
@@ -39,7 +39,7 @@ export CLIENT_KEY=<%= @job['client_key'] %>
       if [ $GERRIT_BRANCH == 'master' ]; then
       /opt/chef/bin/knife ssh 'chef_environment:<%= @promote_to %> AND role:<%= @job['deployment_role'] %> AND NOT apps_<%= @job['id'] %>_status:inactive' 'chef-client -Fdoc -l debug' -x root -a ipaddress -c /var/lib/jenkins/tools/ci-knife.rb --no-host-key-verify
       else
-      /opt/chef/bin/knife ssh "chef_environment:${GERRIT_BRANCH}-<%= @promote_to %> AND role:<%= @job['deployment_role'] %> AND NOT apps_<%= @job['id'] %>_status:inactive" 'chef-client -Fdoc -l debug' -x root -a ipaddress -c /var/lib/jenkins/tools/ci-knife.rb --no-host-key-verify
+      /opt/chef/bin/knife ssh "chef_environment:${GERRIT_BRANCH}-<%= @leg %> AND role:<%= @job['deployment_role'] %> AND NOT apps_<%= @job['id'] %>_status:inactive" 'chef-client -Fdoc -l debug' -x root -a ipaddress -c /var/lib/jenkins/tools/ci-knife.rb --no-host-key-verify
       fi
 <%- end -%>
   </command>
@@ -53,7 +53,7 @@ export CLIENT_KEY=<%= @job['client_key'] %>
 if [ $GERRIT_BRANCH == 'master' ]; then
 /var/lib/jenkins/tools/watch_deploy.rb <%= @promote_to %> <%= @job['id'] %> <%= @job['deployment_role'] %> <%= @job['deployment_watch_interval'] %> <%= @job['deployment_watch_timeout'] %>
 else
-/var/lib/jenkins/tools/watch_deploy.rb ${GERRIT_BRANCH}-<%= @promote_to %> <%= @job['id'] %> <%= @job['deployment_role'] %> <%= @job['deployment_watch_interval'] %> <%= @job['deployment_watch_timeout'] %>
+/var/lib/jenkins/tools/watch_deploy.rb ${GERRIT_BRANCH}-<%= @leg %> <%= @job['id'] %> <%= @job['deployment_role'] %> <%= @job['deployment_watch_interval'] %> <%= @job['deployment_watch_timeout'] %>
 fi
 </command>
     </hudson.tasks.Shell>
