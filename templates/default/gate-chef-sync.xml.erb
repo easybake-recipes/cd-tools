@@ -40,7 +40,11 @@ export CHEF_SERVER_URL=<%= @job['chef_server_url'] %>
 export NODE_NAME=<%= @job['node_name'] %>
 export CLIENT_KEY=<%= @job['client_key'] %>
 cd ./chef-repo || true
-/var/lib/jenkins/tools/pin_environment.rb dev-<%= @job['id'] %>
+if [ ${GERRIT_BRANCH} == 'master' ]; then
+  /var/lib/jenkins/tools/pin_environment.rb dev-<%= @job['id'] %>
+else
+  /var/lib/jenkins/tools/pin_environment.rb ${GERRIT_BRANCH}-dev-<%= @job['id'] %>
+fi
 </command>id
     </hudson.tasks.Shell>
     <hudson.tasks.Shell>
@@ -49,7 +53,11 @@ export CHEF_SERVER_URL=<%= @job['chef_server_url'] %>
 export NODE_NAME=<%= @job['node_name'] %>
 export CLIENT_KEY=<%= @job['client_key'] %>
 cd ./chef-repo || true
-/var/lib/jenkins/tools/set_environment_attrs.rb dev-<%= @job['id'] %>
+if [ ${GERRIT_BRANCH} == 'master' ]; then
+  /var/lib/jenkins/tools/set_environment_attrs.rb dev-<%= @job['id'] %>
+else
+  /var/lib/jenkins/tools/set_environment_attrs.rb ${GERRIT_BRANCH}-dev-<%= @job['id'] %>
+fi
 </command>
     </hudson.tasks.Shell>
 <%- if @pipeline_type == "app" -%>
@@ -59,7 +67,11 @@ export CHEF_SERVER_URL=<%= @job['chef_server_url'] %>
 export NODE_NAME=<%= @job['node_name'] %>
 export CLIENT_KEY=<%= @job['client_key'] %>
 cd ./chef-repo || true
-/var/lib/jenkins/tools/set_application_versions.rb dev-<%= @job['id'] %> <%= @job['id'] %>
+if [ ${GERRIT_BRANCH} == 'master' ]; then
+  /var/lib/jenkins/tools/set_application_versions.rb dev-<%= @job['id'] %> <%= @job['id'] %>
+else
+  /var/lib/jenkins/tools/set_application_versions.rb ${GERRIT_BRANCH}-dev-<%= @job['id'] %> <%= @job['id'] %>
+fi
 </command>
     </hudson.tasks.Shell>
 <%- end -%>
