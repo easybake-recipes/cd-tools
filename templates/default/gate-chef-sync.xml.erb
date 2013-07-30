@@ -56,7 +56,7 @@ cd ./chef-repo || true
 if [ ${GERRIT_BRANCH} == 'master' ]; then
   /var/lib/jenkins/tools/set_environment_attrs.rb dev-<%= @job['id'] %>
 else
-  /var/lib/jenkins/tools/set_environment_attrs.rb ${GERRIT_BRANCH}-dev-<%= @job['id'] %>
+  /var/lib/jenkins/tools/set_environment_attrs.rb ${GERRIT_BRANCH} %>
 fi
 </command>
     </hudson.tasks.Shell>
