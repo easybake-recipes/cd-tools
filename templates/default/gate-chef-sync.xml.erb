@@ -82,6 +82,7 @@ export NODE_NAME=<%= @job['node_name'] %>
 export CLIENT_KEY=<%= @job['client_key'] %>
 export LANG=en_US.UTF-8
 cd ./chef-repo || true
+/var/lib/jenkins/tools/convert_roles_to_json.rb
 if [ -f ./metadata.rb ]; then
   name=`cat metadata.rb | grep '^name' | perl -p -i -e "s:^name\s+[\"'](.+)[\"']:\\$1:g"`
   if [ -z "$name" ]; then
