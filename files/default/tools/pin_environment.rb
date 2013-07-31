@@ -45,7 +45,7 @@ end
 
 if ARGV[1] == "integration"
   Chef::Environment.list.each do |env, uri|
-    if env != ARGV[0] && env =~ /^(dev-|integration|[a-zA-Z]+-[0-9]+$)/
+    if env != ARGV[0] && env =~ /^(dev-|integration|[a-zA-Z]+-[0-9]+)/
       pin_env(env, cookbook_versions)
     end
   end
