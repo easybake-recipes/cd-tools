@@ -47,21 +47,27 @@ export CLIENT_KEY=<%= @job['client_key'] %>
         then
           NAME=<%= [@promote_to,@job['deployment_role']].join('-') %>-${RANDOM}
           /opt/chef/bin/knife cs server create --no-public-ip \
-            --template centos-6.4-20gb-chef11 --service testnode_2x1ghz_2gb -N ${NAME} \
+	    -N ${NAME} --environment <%= @promote_to %> \
+            --template centos-6.4-20gb-chef11 --service testnode_2x1ghz_2gb \
             --ssh-user root --identity-file ~/.ssh/vagrant \
             --run-list "role[pipeline-base],role[access-engineering-support],role[<%= @job['deployment_role'] %>]" ${NAME}
+	  echo "Waiting for this node to show up in solr / knife search"
+	  sleep 10
 	 fi
       else
         # search for node within the target environment with the target role
-        /opt/chef/bin/knife exec -E 'search(:node,"chef_environment:<%= @promote_to %> AND role:<%= @job['deployment_role'] %>") == [] ? exit(1) : exit(0)'
+        /opt/chef/bin/knife exec -E 'search(:node,"chef_environment:#{ENV[:GERRIT_BRANCH.to_s]}-<%= @leg %> AND role:<%= @job['deployment_role'] %>") == [] ? exit(1) : exit(0)'
         if [ $? -gt 0 ]
         # if we do not find one, create one (need to template this out later)
         then
           NAME=${GERRIT_BRANCH}-<%= @leg %>-<%= @job['deployment_role'] %>-${RANDOM}
           /opt/chef/bin/knife cs server create --no-public-ip \
-            --template centos-6.4-20gb-chef11 --service testnode_2x1ghz_2gb -N ${NAME} \
+	    -N ${NAME} --environment ${GERRIT_BRANCH}-<%= @leg %> \
+            --template centos-6.4-20gb-chef11 --service testnode_2x1ghz_2gb \
             --ssh-user root --identity-file ~/.ssh/vagrant \
             --run-list "role[pipeline-base],role[access-engineering-support],role[<%= @job['deployment_role'] %>]" ${NAME}
+	  echo "Waiting for this node to show up in solr / knife search"
+	  sleep 10
 	 fi
       fi
 <%- end -%>
