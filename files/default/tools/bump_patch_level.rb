@@ -23,9 +23,10 @@ end
 
 updated = false
 
-if !system("git checkout master")
-  raise "Failed to checkout master"
-end
+# why did we do this? we should be on the branch we want right now!
+#if !system("git checkout master")
+#  raise "Failed to checkout master"
+#end
 
 seen_cookbooks = [] 
 
