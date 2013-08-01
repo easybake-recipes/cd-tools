@@ -45,15 +45,15 @@ end
 
 if ARGV[1] == "integration"
   Chef::Environment.list.each do |env, uri|
+    # match dev, integration or any jira ticket
     if env != ARGV[0] && env =~ /^(dev-|integration|[a-zA-Z]+-[0-9]+)/
       pin_env(env, cookbook_versions)
     end
   end
 else
-  if Chef::Search::Query.new.search(:environment,'name:#{ARGV[1]}')[0].length == 0
-    "/var/lib/jenkins/tools/promote.rb " +
-      "#{ENV['CHEF_SERVER_URL']} #{ENV['NODE_NAME']} #{ENV['CLIENT_KEY']} integration" +
-      "#{ENV['CHEF_SERVER_URL']} #{ENV['NODE_NAME']} #{ENV['CLIENT_KEY']} #{ARGV[1]}"
+  if Chef::Search::Query.new.search(:environment,"name:#{ARGV[0]}")[0].length == 0
+    `/var/lib/jenkins/tools/promote.rb #{ENV['CHEF_SERVER_URL']} #{ENV['NODE_NAME']} #{ENV['CLIENT_KEY']} integration #{ENV['CHEF_SERVER_URL']} #{ENV['NODE_NAME']} #{ENV['CLIENT_KEY']} #{ARGV[0]}`
+    raise 'Promotion Failed' if $?.to_i > 0
   end
   pin_env(ARGV[0], cookbook_versions)
 end
