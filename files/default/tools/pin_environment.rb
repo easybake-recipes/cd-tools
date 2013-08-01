@@ -50,6 +50,9 @@ if ARGV[1] == "integration"
     end
   end
 else
+  if Chef::Search::Query.new.search(:environment,'name:#{ARGV[1]}')[0].length == 0
+    "/var/lib/jenkins/tools/promote.rb #{ENV['CHEF_SERVER_URL} #{ENV['NODE_NAME']} #{ENV['CLIENT_KEY']} integration #{ENV['CHEF_SERVER_URL']} #{ENV['NODE_NAME']} #{ENV['CLIENT_KEY']} #{ARGV[1]}"
+  end
   pin_env(ARGV[0], cookbook_versions)
 end
 
