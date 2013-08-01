@@ -28,7 +28,7 @@ updated = false
 #  raise "Failed to checkout master"
 #end
 
-seen_cookbooks = [] 
+seen_cookbooks = []
 
 STDIN.each_line do |diff_line|
   if diff_line =~ /^(.)\s+cookbooks\/(.+)/
@@ -38,9 +38,10 @@ STDIN.each_line do |diff_line|
   else
     next
   end
-  metadata_file = File.expand_path(File.join("cookbooks", cookbook, "metadata.rb"))
+  metadata_file = File.expand_path(File.join("cookbooks", cookbook,
+                                        "metadata.rb"))
   bump_patch_level(metadata_file)
-  if !system("git add #{metadata_file}") 
+  if !system("git add #{metadata_file}")
     raise "Failed to git add #{metdata_file}: #{$?}"
   end
   seen_cookbooks << cookbook
@@ -51,7 +52,7 @@ end
 metadata_file = 'metadata.rb'
 if File.exists? (metadata_file)
   bump_patch_level(metadata_file)
-  if !system("git add #{metadata_file}") 
+  if !system("git add #{metadata_file}")
     raise "Failed to git add #{metdata_file}: #{$?}"
   end
   seen_cookbooks << '_thisrepo_' # can we pull the name from the metadata?
@@ -63,7 +64,13 @@ if updated
     raise "Failed to git commit"
   end
 
-  if !system("git push origin master") 
+  if ENV['GERRIT_BRANCH'].nil?
+    branch="master"
+  else
+    branch=ENV['GERRIT_BRANCH']
+  end
+
+  if !system("git push origin " + branch)
     raise "Failed to git push"
   end
 end
