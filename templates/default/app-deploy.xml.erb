@@ -37,7 +37,7 @@
 <%- if @job['winrm'] -%>
       /opt/chef/bin/knife winrm 'chef_environment:<%= @promote_to %> AND role:<%= @job['deployment_role'] %> AND NOT apps_<%= @job['id'] %>_status:inactive' 'chef-client -Fdoc -l debug' -x <%= @job['winrm']['username'] %> -P <%= @job['winrm']['password'] %> -c /var/lib/jenkins/tools/ci-knife.rb -a azurefqdn
 <%- else -%>
-      if [ $GERRIT_BRANCH == 'master' ]
+      if [ $GERRIT_BRANCH == 'null' || $GERRIT_BRANCH == 'master' ]; then
       then
         # search for node within the target environment with the target role
         /opt/chef/bin/knife exec -E 'search(:node,"chef_environment:<%= @promote_to %> AND role:<%= @job['deployment_role'] %>") == [] ? exit(1) : exit(0)'
