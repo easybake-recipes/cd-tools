@@ -29,11 +29,12 @@
       </command>
     </hudson.tasks.Shell>
 
+
     <hudson.tasks.Shell>
       <command>#!/bin/bash -x
-      export CHEF_SERVER_URL=<%= @job['chef_server_url'] %>
-      export NODE_NAME=<%= @job['node_name'] %>
-      export CLIENT_KEY=<%= @job['client_key'] %>
+export CHEF_SERVER_URL=<%= @job['chef_server_url'] %>
+export NODE_NAME=<%= @job['node_name'] %>
+export CLIENT_KEY=<%= @job['client_key'] %>
 <%- if @job['winrm'] -%>
       /opt/chef/bin/knife winrm 'chef_environment:<%= @promote_to %> AND role:<%= @job['deployment_role'] %> AND NOT apps_<%= @job['id'] %>_status:inactive' 'chef-client -Fdoc -l debug' -x <%= @job['winrm']['username'] %> -P <%= @job['winrm']['password'] %> -c /var/lib/jenkins/tools/ci-knife.rb -a azurefqdn
 <%- else -%>
@@ -44,13 +45,7 @@
         if [ $? -gt 0 ]
         # if we do not find one, create one (need to template this out later)
         then
-          # Since CloudStack is insane and the maximum name length is
-          # 63 characters we need to truncate here. Bash ${RANDOM}
-          # returns a number between 0 and 32767 so we need to allocate
-          # 6 characters for the "-" and the number.
-          NAME=<%= [@promote_to,@job['deployment_role']].join('-') %> | cut -b 1-57
-          NAME=${NAME}-${RANDOM}
-
+          NAME=<%= [@promote_to,@job['deployment_role']].join('-') %>-${RANDOM}
           /opt/chef/bin/knife cs server create --no-public-ip \
 	    -N ${NAME} --environment <%= @promote_to %> \
             --template centos-6.4-20gb-chef11 --service testnode_2x1ghz_2gb \
@@ -65,10 +60,7 @@
         if [ $? -gt 0 ]
         # if we do not find one, create one (need to template this out later)
         then
-          # See above fort the explanation of this madness.
-          NAME=${GERRIT_BRANCH}-<%= @leg %>-<%= @job['deployment_role'] %> | cut -b 1-57
-          NAME=${NAME}-${RANDOM}
-
+          NAME=${GERRIT_BRANCH}-<%= @leg %>-<%= @job['deployment_role'] %>-${RANDOM}
           /opt/chef/bin/knife cs server create --no-public-ip \
 	    -N ${NAME} --environment ${GERRIT_BRANCH}-<%= @leg %> \
             --template centos-6.4-20gb-chef11 --service testnode_2x1ghz_2gb \
