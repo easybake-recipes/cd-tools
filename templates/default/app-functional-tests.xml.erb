@@ -24,7 +24,7 @@
 export CHEF_SERVER_URL=<%= @job['chef_server_url'] %>
 export NODE_NAME=<%= @job['node_name'] %>
 export CLIENT_KEY=<%= @job['client_key'] %>
-if [ $GERRIT_BRANCH == 'master' ]; then
+if [[ -z $GERRIT_BRANCH || $GERRIT_BRANCH == 'null' || $GERRIT_BRANCH == 'master' ]]; then
    eval "export `/var/lib/jenkins/tools/get_app_build.rb <%= @promote_to %> <%= @job['id'] %>`"
 else
    eval "export `/var/lib/jenkins/tools/get_app_build.rb ${GERRIT_BRANCH}-<%= @leg %> <%= @job['id'] %>`"
